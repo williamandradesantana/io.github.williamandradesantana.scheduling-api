@@ -16,6 +16,7 @@
 		<springdoc.version>3.1.0</springdoc.version>
 		<junit.version>6.1.2</junit.version>
 		<testcontainers-postgres.version>1.21.4</testcontainers-postgres.version>
+		<java-jwt.version>4.6.1</java-jwt.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -33,6 +34,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java-jwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
