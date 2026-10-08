@@ -1,6 +1,7 @@
 package io.github.williamandradesantana.scheduling_api.domain.auth.controller;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.request.CreateUserRequest;
+import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.request.GetRefreshTokenCommand;
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.security.AccountCredentialsDTO;
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.security.TokenDTO;
 import io.github.williamandradesantana.scheduling_api.domain.auth.services.AuthServices;
@@ -47,6 +48,6 @@ public class AuthController {
         @PathVariable("userName") String userName,
         @RequestHeader("Authorization") String refreshToken
     ) {
-        return authServices.refreshToken(userName, refreshToken);
+        return authServices.refreshToken(new GetRefreshTokenCommand(userName, refreshToken));
     }
 }

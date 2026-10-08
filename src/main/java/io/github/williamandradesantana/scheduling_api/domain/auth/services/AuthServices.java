@@ -1,6 +1,7 @@
 package io.github.williamandradesantana.scheduling_api.domain.auth.services;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.request.CreateUserRequest;
+import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.request.GetRefreshTokenCommand;
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.security.AccountCredentialsDTO;
 import io.github.williamandradesantana.scheduling_api.domain.auth.data.dto.security.TokenDTO;
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.Permission;
@@ -20,8 +21,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -46,20 +45,20 @@ public class AuthServices {
                 new UsernamePasswordAuthenticationToken(credentials.getUserName(), credentials.getPassword())
         );
 
-        User user = userRepository.findByUsername(credentials.getUserName());
+        User user = userRepository.findByUserName(credentials.getUserName());
         if (user == null) throw new UsernameNotFoundException("Username: " + credentials.getUserName() + " not found!");
 
         var token = tokenProvider.createAccessToken(credentials.getUserName(), user.getRoles());
         return ResponseEntity.ok(token);
     }
 
-    public ResponseEntity<TokenDTO> refreshToken(String userName, String refreshToken) {
-        User user = userRepository.findByUsername(userName);
+    public ResponseEntity<TokenDTO> refreshToken(GetRefreshTokenCommand command) {
+        User user = userRepository.findByUserName(command.userName());
         TokenDTO token;
         if (user != null) {
-            token = tokenProvider.refreshToken(refreshToken);
+            token = tokenProvider.refreshToken(command.refreshToken());
         } else {
-            throw new UsernameNotFoundException("Username: " + userName + " not found!");
+            throw new UsernameNotFoundException("Username: " + command.userName() + " not found!");
         }
         return ResponseEntity.ok(token);
     }
