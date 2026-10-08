@@ -26,6 +26,7 @@ spring:
             scope:
               - email
               - profile
+              - openid
 
   output:
     ansi:
