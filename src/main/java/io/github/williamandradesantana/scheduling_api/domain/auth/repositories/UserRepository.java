@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("select u from User u where u.userName = :userName")
-    User findByUsername(@Param("userName") String userName);
+    User findByUserName(@Param("userName") String userName);
 
     boolean existsByUserNameIgnoreCase(String userName);
     boolean existsByEmailIgnoreCase(String email);
