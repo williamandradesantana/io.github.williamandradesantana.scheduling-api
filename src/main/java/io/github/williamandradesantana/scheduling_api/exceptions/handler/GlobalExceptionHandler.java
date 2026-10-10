@@ -1,5 +1,6 @@
 package io.github.williamandradesantana.scheduling_api.exceptions.handler;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.InvalidJwtAuthenticationException;
 import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.PermissionNameNotFound;
 import io.github.williamandradesantana.scheduling_api.exceptions.BusinessException;
@@ -74,6 +75,20 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ErrorResponse> handleTokenExpiredExceptions(
+            TokenExpiredException exception, WebRequest request
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

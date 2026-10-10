@@ -1,7 +1,12 @@
 package io.github.williamandradesantana.scheduling_api.configuration;
 
+import io.github.williamandradesantana.scheduling_api.domain.auth.services.GoogleAuthServices;
 import io.github.williamandradesantana.scheduling_api.security.jwt.JwtTokenFilter;
 import io.github.williamandradesantana.scheduling_api.security.jwt.JwtTokenProvider;
+import io.github.williamandradesantana.scheduling_api.security.oauth2.CookieOAuth2AuthorizationRequestRepository;
+import io.github.williamandradesantana.scheduling_api.security.oauth2.OAuth2LoginFailureHandler;
+import io.github.williamandradesantana.scheduling_api.security.oauth2.OAuth2LoginSuccessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.HashMap;
@@ -27,8 +33,26 @@ public class SecurityConfig {
 
     private final JwtTokenProvider tokenProvider;
 
+    @Value("${app.oauth2.authorized-redirect-uri}")
+    private String authorizedRedirectUri;
+
     public SecurityConfig(JwtTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
+    }
+
+    @Bean
+    public CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
+        return new CookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler(GoogleAuthServices googleAuthServices) {
+        return new OAuth2LoginSuccessHandler(googleAuthServices, authorizedRedirectUri);
+    }
+
+    @Bean
+    public OAuth2LoginFailureHandler oAuth2LoginFailureHandler() {
+        return new OAuth2LoginFailureHandler(authorizedRedirectUri);
     }
 
     @Bean
@@ -50,7 +74,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository,
+        OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+        OAuth2LoginFailureHandler oAuth2LoginFailureHandler
+    ) {
         JwtTokenFilter filter = new JwtTokenFilter(tokenProvider);
 
         return http
@@ -62,17 +91,27 @@ public class SecurityConfig {
                 .sessionManagement(
         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .oauth2Login(oauth2 ->
+                    oauth2.authorizationEndpoint(endpoint ->
+                        endpoint.authorizationRequestRepository(authorizationRequestRepository)
+                    )
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
+                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new Http403ForbiddenEntryPoint()))
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers(
-                    "/auth/sign-in",
-                    "/auth/refresh/**",
-                    "/auth/create-user",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                        "/auth/sign-in",
+                        "/auth/refresh/**",
+                        "/auth/create-user",
+                        "/oauth2/**",
+                        "/login/oauth2/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
                     ).permitAll();
                     authorize
-                            .requestMatchers("/api/**").authenticated()
-                            .requestMatchers("/users").denyAll();
+                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/users").denyAll();
                 })
                 .build();
     }
