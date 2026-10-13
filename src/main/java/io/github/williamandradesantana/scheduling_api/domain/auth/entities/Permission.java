@@ -1,6 +1,7 @@
 package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
+import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,20 @@ public class Permission implements GrantedAuthority {
     private PermissionName name;
 
     public Permission() {}
+
+    public Permission(UUID id, PermissionName name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public static Permission create(PermissionName permissionName) {
+        if (permissionName == null) throw new DomainException("Permission name cannot be null");
+        return new Permission(UUID.randomUUID(), permissionName);
+    }
+
+    public static Permission restore(UUID id, PermissionName permissionName) {
+        return new Permission(id, permissionName);
+    }
 
     @Override
     public @Nullable String getAuthority() {

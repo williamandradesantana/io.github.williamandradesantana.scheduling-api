@@ -2,6 +2,7 @@ package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.AuthProvider;
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
+import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -105,6 +106,74 @@ public class User implements UserDetails {
     @PreUpdate
     void preUpdate() {
         this.updatedAt = Instant.now();
+    }
+
+    public static User create(
+        String userName, String email, String fullName, String password,
+        AuthProvider authProvider, String providerId, Set<Permission> permissions
+    ) {
+        if (userName == null || userName.isBlank())
+            throw new DomainException("userName cannot be blank");
+        if (email == null || email.isBlank())
+            throw new DomainException("email cannot be blank");
+        if (fullName == null || fullName.isBlank())
+            throw new DomainException("fullName cannot be blank");
+        if (authProvider == null)
+            throw new DomainException("authProvider cannot be null");
+        if (permissions == null || permissions.isEmpty())
+            throw new DomainException("a user needs at least one permission");
+
+        switch (authProvider) {
+            case LOCAL -> {
+                if (password == null || password.isBlank())
+                    throw new DomainException("LOCAL users require a password");
+                if (providerId != null)
+                    throw new DomainException("LOCAL users cannot have a providerId");
+            }
+            case GOOGLE -> {
+                if (providerId == null || providerId.isBlank())
+                    throw new DomainException("GOOGLE users require a providerId");
+                if (password != null)
+                    throw new DomainException("GOOGLE users cannot have a password");
+            }
+        }
+
+        Instant now = Instant.now();
+        return new User(
+            null,
+            userName.trim(),
+            email.trim().toLowerCase(),
+            fullName.trim(),
+            password,
+            authProvider,
+            providerId,
+            true, true, true, true,
+            now, now,
+            permissions
+        );
+    }
+
+    public static User restore(
+            UUID id, String userName, String email, String fullName, String password,
+            AuthProvider authProvider, String providerId,
+            Boolean accountNonExpired, Boolean accountNonLocked, Boolean credentialsNonExpired, Boolean enabled,
+            Instant createdAt, Instant updatedAt, Set<Permission> permissions) {
+        return new User(
+            id,
+            userName.trim(),
+            email.trim().toLowerCase(),
+            fullName.trim(),
+            password,
+            authProvider,
+            providerId,
+            accountNonExpired,
+            accountNonLocked,
+            credentialsNonExpired,
+            enabled,
+            createdAt,
+            updatedAt,
+            permissions
+        );
     }
 
     @Override
