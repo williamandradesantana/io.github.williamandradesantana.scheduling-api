@@ -2,6 +2,7 @@ package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.AuthProvider;
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
+import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.*;
 import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
 import jakarta.persistence.*;
 import org.jspecify.annotations.Nullable;
@@ -113,15 +114,15 @@ public class User implements UserDetails {
         AuthProvider authProvider, String providerId, Set<Permission> permissions
     ) {
         if (userName == null || userName.isBlank())
-            throw new DomainException("userName cannot be blank");
+            throw new InvalidUserNameException("userName cannot be blank");
         if (email == null || email.isBlank())
-            throw new DomainException("email cannot be blank");
+            throw new InvalidEmailException("email cannot be blank");
         if (fullName == null || fullName.isBlank())
-            throw new DomainException("fullName cannot be blank");
+            throw new InvalidFullNameException("fullName cannot be blank");
         if (authProvider == null)
-            throw new DomainException("authProvider cannot be null");
+            throw new InvalidAuthProviderException("authProvider cannot be null");
         if (permissions == null || permissions.isEmpty())
-            throw new DomainException("a user needs at least one permission");
+            throw new InvalidPermissionsException("a user needs at least one permission");
 
         switch (authProvider) {
             case LOCAL -> {

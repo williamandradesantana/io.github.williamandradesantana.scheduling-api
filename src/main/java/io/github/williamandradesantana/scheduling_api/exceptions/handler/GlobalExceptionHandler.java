@@ -1,11 +1,11 @@
 package io.github.williamandradesantana.scheduling_api.exceptions.handler;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.InvalidJwtAuthenticationException;
-import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.PermissionNameNotFound;
+import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.*;
 import io.github.williamandradesantana.scheduling_api.exceptions.BusinessException;
 import io.github.williamandradesantana.scheduling_api.exceptions.ErrorResponse;
 import io.github.williamandradesantana.scheduling_api.exceptions.RequiredObjectIsNullException;
+import io.github.williamandradesantana.scheduling_api.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -92,6 +92,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException exception, WebRequest request
     ) {
@@ -106,6 +107,96 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundExceptions(
+            ResourceNotFoundException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidAuthProviderException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleInvalidAuthProviderExceptions(
+            InvalidAuthProviderException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidEmailException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleInvalidEmailExceptions(
+            InvalidEmailException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidFullNameException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleInvalidFullNameExceptions(
+            InvalidFullNameException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidPermissionsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleInvalidPermissionsExceptions(
+            InvalidPermissionsException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidUserNameException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleInvalidUserNameExceptions(
+            InvalidUserNameException exception, WebRequest request
+    ) {
+
+        ErrorResponse response = new ErrorResponse(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

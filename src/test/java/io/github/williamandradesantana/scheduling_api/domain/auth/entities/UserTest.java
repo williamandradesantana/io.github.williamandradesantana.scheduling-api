@@ -2,16 +2,15 @@ package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.AuthProvider;
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
-import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
-import org.junit.jupiter.api.AfterEach;
+import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.InvalidEmailException;
+import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.InvalidFullNameException;
+import io.github.williamandradesantana.scheduling_api.domain.auth.exceptions.InvalidUserNameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,7 +66,7 @@ class UserTest {
 
     @Test
     void test_WhenUserNameIsNull_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidUserNameException.class, () -> User.create(
             null, "email@email.com", "fullName", "password",
             AuthProvider.LOCAL, null, permissions
         ));
@@ -75,7 +74,7 @@ class UserTest {
 
     @Test
     void test_WhenUserNameIsBlank_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidUserNameException.class, () -> User.create(
             " ", "email@email.com", "fullName", "password",
             AuthProvider.LOCAL, null, permissions
         ));
@@ -83,7 +82,7 @@ class UserTest {
 
     @Test
     void test_WhenEmailIsNull_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidEmailException.class, () -> User.create(
             "user", null, "fullName", "password",
             AuthProvider.LOCAL, null, permissions
         ));
@@ -91,7 +90,7 @@ class UserTest {
 
     @Test
     void test_WhenEmailIsBlank_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidEmailException.class, () -> User.create(
             "user", " ", "fullName", "password",
             AuthProvider.LOCAL, null, permissions
         ));
@@ -99,7 +98,7 @@ class UserTest {
 
     @Test
     void test_WhenFullNameIsNull_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidFullNameException.class, () -> User.create(
             "user", "email@email.com", null, "password",
             AuthProvider.LOCAL, null, permissions
         ));
@@ -107,7 +106,7 @@ class UserTest {
 
     @Test
     void test_WhenFullNameIsBlank_ShouldReturnException() {
-        assertThrows(DomainException.class, () -> User.create(
+        assertThrows(InvalidFullNameException.class, () -> User.create(
             "user", "email@email.com", " ", "password",
             AuthProvider.LOCAL, null, permissions
         ));
