@@ -2,14 +2,14 @@ package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
 import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PermissionTest {
 
