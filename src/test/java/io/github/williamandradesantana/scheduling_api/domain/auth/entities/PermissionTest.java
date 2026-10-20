@@ -3,6 +3,7 @@ package io.github.williamandradesantana.scheduling_api.domain.auth.entities;
 import io.github.williamandradesantana.scheduling_api.domain.auth.entities.enums.PermissionName;
 import io.github.williamandradesantana.scheduling_api.domain.shared.exceptions.DomainException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -31,12 +32,14 @@ class PermissionTest {
     }
 
     @Test
+    @DisplayName("Test: when permission is created, should return correct value")
     void test_When_PermissionIsCreated_ShouldReturnCorrectValue() {
         assertEquals(customer, customerPermission.getName());
         assertEquals(professional, professionalPermission.getName());
     }
 
     @Test
+    @DisplayName("Test: when permission is null, should throw exception")
     void test_WhenPermissionNameIsNull_ShouldThrowException() {
         String expectedMessage = "Permission name cannot be null";
         DomainException exception = assertThrows(DomainException.class, () -> Permission.create(null));
